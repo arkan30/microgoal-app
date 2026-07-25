@@ -104,7 +104,7 @@ class Api {
   static Future<void> saveGestalt(int userId, String text) =>
       _put('/users/$userId/gestalt', {'gestalt_text': text});
 
-  static Future<List<dynamic>> getGoals(int userId) => _get('/goals/$userId') as Future<List<dynamic>>;
+  static Future<List<dynamic>> getGoals(int userId) async { final r = await _get('/goals/$userId'); return r as List<dynamic>; }
   static Future<int> addGoal(int userId, String title, int position) async {
     final d = await _post('/goals', {'user_id': userId, 'title': title, 'position': position});
     return d['goalId'];
@@ -112,7 +112,7 @@ class Api {
   static Future<void> updateGoal(int goalId, String title) => _put('/goals/$goalId', {'title': title});
   static Future<void> deleteGoal(int goalId) => _delete('/goals/$goalId');
 
-  static Future<List<dynamic>> getSubgoals(int goalId) => _get('/subgoals/$goalId') as Future<List<dynamic>>;
+  static Future<List<dynamic>> getSubgoals(int goalId) async { final r = await _get('/subgoals/$goalId'); return r as List<dynamic>; }
   static Future<void> addSubgoal(int goalId, String text) =>
       _post('/subgoals', {'main_goal_id': goalId, 'text': text});
   static Future<void> toggleSubgoal(int subId, bool done) =>
@@ -121,11 +121,11 @@ class Api {
       _put('/subgoals/$subId', {'text': text});
   static Future<void> deleteSubgoal(int subId) => _delete('/subgoals/$subId');
 
-  static Future<List<dynamic>> getNotes(int userId) => _get('/notes/$userId') as Future<List<dynamic>>;
+  static Future<List<dynamic>> getNotes(int userId) async { final r = await _get('/notes/$userId'); return r as List<dynamic>; }
   static Future<void> saveNote(int userId, String date, String note, bool marked) =>
       _post('/notes', {'user_id': userId, 'date': date, 'note': note, 'is_marked': marked ? 1 : 0});
 
-  static Future<Map<String, dynamic>> getProgress(int userId) => _get('/progress/$userId') as Future<Map<String, dynamic>>;
+  static Future<Map<String, dynamic>> getProgress(int userId) async { final r = await _get('/progress/$userId'); return r as Map<String, dynamic>; }
 }
 // ==================== ورود خودکار ====================
 class RootGate extends StatefulWidget {
@@ -427,12 +427,16 @@ class _GoalsTabState extends State<GoalsTab> {
 
   Future<void> _saveGoalTitle(GoalData g, String title) async {
     if (title.trim().isEmpty) return;
-    if (g.id == null) {
-      g.id = await Api.addGoal(widget.userId, title, g.position);
-    } else {
-      await Api.updateGoal(g.id!, title);
+    try {
+      if (g.id == null) {
+        g.id = await Api.addGoal(widget.userId, title, g.position);
+      } else {
+        await Api.updateGoal(g.id!, title);
+      }
+      g.title = title;
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در ذخیره هدف: $e')));
     }
-    g.title = title;
   }
 
   Future<void> _deleteGoal(GoalData g) async {
@@ -448,25 +452,40 @@ class _GoalsTabState extends State<GoalsTab> {
       ),
     );
     if (confirm != true) return;
-    if (g.id != null) await Api.deleteGoal(g.id!);
-    setState(() => goals.remove(g));
+    try {
+      if (g.id != null) await Api.deleteGoal(g.id!);
+      setState(() => goals.remove(g));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در حذف هدف: $e')));
+    }
   }
 
   Future<void> _addSubgoal(GoalData g, String text) async {
     if (g.id == null || text.trim().isEmpty) return;
-    await Api.addSubgoal(g.id!, text);
-    final subs = await Api.getSubgoals(g.id!);
-    setState(() => g.subgoals = subs.map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList());
+    try {
+      await Api.addSubgoal(g.id!, text);
+      final subs = await Api.getSubgoals(g.id!);
+      setState(() => g.subgoals = subs.map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList());
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در افزودن ریزهدف: $e')));
+    }
   }
 
   Future<void> _toggleSub(SubGoalData s) async {
-    await Api.toggleSubgoal(s.id, !s.done);
-    setState(() => s.done = !s.done);
+    try {
+      await Api.toggleSubgoal(s.id, !s.done);
+      setState(() => s.done = !s.done);
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در به‌روزرسانی: $e')));
+    }
   }
-
   Future<void> _deleteSub(GoalData g, SubGoalData s) async {
-    await Api.deleteSubgoal(s.id);
-    setState(() => g.subgoals.remove(s));
+    try {
+      await Api.deleteSubgoal(s.id);
+      setState(() => g.subgoals.remove(s));
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در حذف: $e')));
+    }
   }
 
   Future<void> _editSubgoalDialog(SubGoalData s) async {
