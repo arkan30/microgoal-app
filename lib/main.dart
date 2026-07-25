@@ -696,7 +696,7 @@ class _CalendarTabState extends State<CalendarTab> {
                 child: Container(
                   margin: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: (note?.marked ?? false) ? AppColors.sage.withOpacity(0.25) : AppColors.surfaceTint,
+                    color: (note?.marked ?? false) ? AppColors.sage.withValues(alpha: 0.25) : AppColors.surfaceTint,
                     border: Border.all(color: (note?.marked ?? false) ? AppColors.sage : AppColors.border),
                     borderRadius: BorderRadius.circular(6),
                   ),
