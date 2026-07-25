@@ -54,29 +54,42 @@ class MicroGoalApp extends StatelessWidget {
 
 // ==================== API ====================
 class Api {
+  static Future<http.Response> _withRetry(Future<http.Response> Function() request) async {
+    Object? lastError;
+    for (int attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await request().timeout(const Duration(seconds: 15));
+      } catch (e) {
+        lastError = e;
+        await Future.delayed(Duration(seconds: attempt + 1));
+      }
+    }
+    throw Exception('اتصال به سرور ناموفق بود: $lastError');
+  }
+
   static Future<Map<String, dynamic>> _post(String path, Map body) async {
-    final r = await http.post(Uri.parse('$apiBase$path'),
-        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));
+    final r = await _withRetry(() => http.post(Uri.parse('$apiBase$path'),
+        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body)));
     final d = jsonDecode(r.body);
     if (r.statusCode >= 200 && r.statusCode < 300) return d;
     throw Exception(d['error'] ?? 'خطای سرور');
   }
 
   static Future<Map<String, dynamic>> _put(String path, Map body) async {
-    final r = await http.put(Uri.parse('$apiBase$path'),
-        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));
+    final r = await _withRetry(() => http.put(Uri.parse('$apiBase$path'),
+        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body)));
     final d = jsonDecode(r.body);
     if (r.statusCode >= 200 && r.statusCode < 300) return d;
     throw Exception(d['error'] ?? 'خطای سرور');
   }
 
   static Future<dynamic> _get(String path) async {
-    final r = await http.get(Uri.parse('$apiBase$path'));
+    final r = await _withRetry(() => http.get(Uri.parse('$apiBase$path')));
     return jsonDecode(r.body);
   }
 
   static Future<void> _delete(String path) async {
-    await http.delete(Uri.parse('$apiBase$path'));
+    await _withRetry(() => http.delete(Uri.parse('$apiBase$path')));
   }
 
   static Future<Map<String, dynamic>> register(String email, String pass) =>
@@ -114,7 +127,6 @@ class Api {
 
   static Future<Map<String, dynamic>> getProgress(int userId) => _get('/progress/$userId') as Future<Map<String, dynamic>>;
 }
-
 // ==================== ورود خودکار ====================
 class RootGate extends StatefulWidget {
   const RootGate({super.key});
