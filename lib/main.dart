@@ -376,28 +376,36 @@ class _GoalsTabState extends State<GoalsTab> {
   }
 
   Future<void> _loadAll() async {
-    final g = await Api.getGestalt(widget.userId);
-    gestaltCtrl.text = g;
-    final serverGoals = await Api.getGoals(widget.userId);
-    for (final sg in serverGoals) {
-      final pos = sg['position'];
-      GoalData existing;
-      final found = goals.where((x) => x.position == pos);
-      if (found.isNotEmpty) {
-        existing = found.first;
-      } else {
-        existing = GoalData(pos);
-        goals.add(existing);
+    try {
+      final g = await Api.getGestalt(widget.userId);
+      gestaltCtrl.text = g;
+      final serverGoals = await Api.getGoals(widget.userId);
+      for (final sg in serverGoals) {
+        final pos = sg['position'];
+        GoalData existing;
+        final found = goals.where((x) => x.position == pos);
+        if (found.isNotEmpty) {
+          existing = found.first;
+        } else {
+          existing = GoalData(pos);
+          goals.add(existing);
+        }
+        existing.id = sg['id'];
+        existing.title = sg['title'];
+        final subs = await Api.getSubgoals(existing.id!);
+        existing.subgoals = subs.map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList();
       }
-      existing.id = sg['id'];
-      existing.title = sg['title'];
-      final subs = await Api.getSubgoals(existing.id!);
-      existing.subgoals = subs.map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList();
+      goals.sort((a, b) => a.position.compareTo(b.position));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطا در اتصال به سرور: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
-    goals.sort((a, b) => a.position.compareTo(b.position));
-    if (mounted) setState(() => loading = false);
   }
-
   void _onGestaltChanged(String v) {
     gestaltTimer?.cancel();
     gestaltTimer = Timer(const Duration(milliseconds: 700), () {
