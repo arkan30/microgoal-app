@@ -651,12 +651,19 @@ class _CalendarTabState extends State<CalendarTab> {
   String _fmt(DateTime d) => '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<void> _loadNotes() async {
-    final notes = await Api.getNotes(widget.userId);
-    notesCache = {};
-    for (final n in notes) {
-      notesCache[n['date']] = NoteData(id: n['id'], date: n['date'], note: n['note'] ?? '', marked: n['is_marked'] == 1);
+    try {
+      final notes = await Api.getNotes(widget.userId);
+      notesCache = {};
+      for (final n in notes) {
+        notesCache[n['date']] = NoteData(id: n['id'], date: n['date'], note: n['note'] ?? '', marked: n['is_marked'] == 1);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در بارگذاری تقویم: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
-    if (mounted) setState(() => loading = false);
   }
 
   Future<void> _openNoteDialog(String dateStr, NoteData? existing) async {
@@ -753,13 +760,18 @@ class _ProgressTabState extends State<ProgressTab> {
   }
 
   Future<void> _load() async {
-    final d = await Api.getProgress(widget.userId);
-    setState(() {
+    try {
+      final d = await Api.getProgress(widget.userId);
       total = d['total_subgoals'];
       done = d['completed_subgoals'];
       percent = d['progress_percent'];
-      loading = false;
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطا در بارگذاری پیشرفت: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
   }
 
   @override
