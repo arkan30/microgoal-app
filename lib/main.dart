@@ -841,6 +841,8 @@ class AboutAppTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(padding: const EdgeInsets.all(20), children: const [
+      Text('توضیحات و مقدمه', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.roseDeep)),
+      SizedBox(height: 6),
       Text('به میکروهدف خوش آمدید', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.text)),
       SizedBox(height: 14),
       Text(
@@ -851,17 +853,34 @@ class AboutAppTab extends StatelessWidget {
       Text('مثال نقاشی اسب', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.text)),
       SizedBox(height: 6),
       Text(
-        'فرض کنید می‌خواهید یک اسب نقاشی کنید. ابتدا طرح کلی را می‌کشید، سپس جزئیات را اضافه می‌کنید. اگر خسته شوید، باز هم یک اسب کامل دارید — نه یک جزئیات ناتمام.',
+        'فرض کنید می‌خواهید یک اسب نقاشی کنید. روش ما این است: ابتدا طرح کلی اسب را می‌کشید — شکل بدن، سر، پاها — و سپس کم‌کم وارد جزئیات می‌شوید: یال، رگ‌های بدن، بافت پوست. اما روش دیگری هم هست که ما آن را رد می‌کنیم: از یک گوشه (مثلاً همان اول، یال اسب) شروع کنید و با نهایت جزئیات و دقت پیش بروید. نکته کار اینجاست که اگر در میانه‌ی راه خسته شوید و ادامه ندهید، در روش اول شما یک اسب کامل (هرچند ساده) دارید، اما در روش دوم فقط یک یال بی‌معنی و رهاشده روی کاغذ باقی می‌ماند. گشتالت یعنی همیشه یک "کل" داشته باشید، نه تکه‌های ناتمام.',
         style: TextStyle(color: AppColors.textSoft, height: 1.8),
       ),
       SizedBox(height: 16),
-      Text('چرا اینجا ثبت ساعت مطالعه وجود ندارد؟', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.text)),
+      Text('چرا اینجا سیستمی برای ثبت ساعت مطالعه یا میزان زمان صرف‌شده وجود ندارد؟', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.text)),
       SizedBox(height: 6),
-      Text('چون تمرکز روی زمان، شما را از خودِ هدف دور می‌کند.', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
+      Text(
+        'چون تمرکز روی زمان، شما را از خودِ هدف دور می‌کند. وقتی مدام حساب کنید که امروز چند ساعت روی کاری وقت گذاشته‌اید، ذهن‌تان به‌جای رسیدن به نتیجه، درگیر عدد و مقایسه و احساس کافی‌نبودن می‌شود. این ابزار به شما یادآوری می‌کند که آنچه واقعاً اهمیت دارد، رسیدن به آن ریزهدف مشخص است — نه اینکه چند ساعت پای آن نشسته‌اید.',
+        style: TextStyle(color: AppColors.textSoft, height: 1.8),
+      ),
+      SizedBox(height: 16),
+      Text('چرا دید کلی مهم‌تر از پیشروی جزء‌به‌جزء است؟', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.text)),
+      SizedBox(height: 6),
+      Text(
+        'وقتی فقط روی جزئیات ریز و لحظه‌به‌لحظه تمرکز می‌کنید، ممکن است مسیر اصلی و معنای بزرگ‌تر کار را گم کنید. اما وقتی ابتدا تصویر کلی (گشتالت) را در ذهن دارید، هر ریزهدف کوچک، جایگاه و معنای خودش را در آن تصویر بزرگ‌تر پیدا می‌کند.',
+        style: TextStyle(color: AppColors.textSoft, height: 1.8),
+      ),
+      SizedBox(height: 16),
+      Text('در این سایت چه می‌کنید؟', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.text)),
+      SizedBox(height: 6),
+      Text('• چهار هدف اصلی‌تان را تعریف می‌کنید', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
+      Text('• برای هرکدام، ریزهدف‌هایی مشخص و قابل‌انجام در یک نشست می‌نویسید', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
+      Text('• هر بار که ریزهدفی را کامل کردید، آن را علامت می‌زنید', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
+      Text('• در تقویم روزانه، درباره مسیر و احساس‌تان یادداشت می‌گذارید', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
+      Text('• و پیشرفت کلی‌تان را — نه بر اساس زمان، بلکه بر اساس واقعاً چه‌کاری انجام داده‌اید — می‌بینید', style: TextStyle(color: AppColors.textSoft, height: 1.8)),
     ]);
   }
 }
-
 // ==================== درباره من ====================
 class AboutMeTab extends StatelessWidget {
   const AboutMeTab({super.key});
@@ -871,15 +890,13 @@ class AboutMeTab extends StatelessWidget {
       Text('ارکان محمودی', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.text)),
       SizedBox(height: 14),
       Text(
-        'شغل اصلی من مشاور مدرسه است. علاقه‌مندم به دانش‌آموزان و هرکسی که می‌خواهد با یک مسیر روشن به اهدافش برسد کمک کنم. رویکرد اصلی من در طراحی این ابزار، رویکرد گشتالتی است.',
+        'شغل اصلی‌ام مشاور مدرسه است، اما فراتر از این عنوان، علاقه‌ی واقعی‌ام کمک به دانش‌آموزان و هر کسی‌ست که می‌خواهد با یک مسیر روشن‌تر به اهدافش برسد. در طراحی این ابزار، رویکرد اصلی‌ام گشتالتی است؛ نگاهی که آدم را نه به‌عنوان مجموعه‌ای از مشکلات جدا از هم، بلکه به‌عنوان یک کل یکپارچه می‌بیند.',
         style: TextStyle(color: AppColors.textSoft, height: 1.8),
       ),
       SizedBox(height: 16),
       Text('شغل: مشاور مدرسه', style: TextStyle(color: AppColors.textSoft)),
       SizedBox(height: 6),
-      Text('شماره تماس: (به‌زودی تکمیل می‌شود)', style: TextStyle(color: AppColors.textSoft)),
-      SizedBox(height: 6),
-      Text('تلگرام: (به‌زودی تکمیل می‌شود)', style: TextStyle(color: AppColors.textSoft)),
+      Text('آیدی تلگرام: arkan.mah2020', style: TextStyle(color: AppColors.textSoft)),
     ]);
   }
 }
