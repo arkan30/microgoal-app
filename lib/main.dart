@@ -320,6 +320,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
+  late final List<Widget> pages;
+
+  @override
+  void initState() {
+    super.initState();
+    pages = [
+      GoalsTab(userId: widget.userId),
+      CalendarTab(userId: widget.userId),
+      ProgressTab(userId: widget.userId),
+      const AboutAppTab(),
+      const AboutMeTab(),
+    ];
+  }
 
   Future<void> _doLogout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -329,13 +342,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      GoalsTab(userId: widget.userId),
-      CalendarTab(userId: widget.userId),
-      ProgressTab(userId: widget.userId),
-      const AboutAppTab(),
-      const AboutMeTab(),
-    ];
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
@@ -346,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.logout, color: AppColors.textSoft), onPressed: _doLogout),
         ],
       ),
-      body: pages[currentIndex],
+      body: IndexedStack(index: currentIndex, children: pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         selectedItemColor: AppColors.roseDeep,
@@ -389,9 +395,14 @@ class _GoalsTabState extends State<GoalsTab> {
 
   Future<void> _loadAll() async {
     try {
-      final g = await Api.getGestalt(widget.userId);
-      gestaltCtrl.text = g;
-      final serverGoals = await Api.getGoals(widget.userId);
+      final results = await Future.wait([
+        Api.getGestalt(widget.userId),
+        Api.getGoals(widget.userId),
+      ]);
+      gestaltCtrl.text = results[0] as String;
+      final serverGoals = results[1] as List<dynamic>;
+
+      final List<GoalData> matched = [];
       for (final sg in serverGoals) {
         final pos = sg['position'];
         GoalData existing;
@@ -404,8 +415,11 @@ class _GoalsTabState extends State<GoalsTab> {
         }
         existing.id = sg['id'];
         existing.title = sg['title'];
-        final subs = await Api.getSubgoals(existing.id!);
-        existing.subgoals = subs.map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList();
+        matched.add(existing);
+      }
+      final subResults = await Future.wait(matched.map((g) => Api.getSubgoals(g.id!)));
+      for (int i = 0; i < matched.length; i++) {
+        matched[i].subgoals = subResults[i].map((s) => SubGoalData(s['id'], s['text'], s['is_done'] == 1)).toList();
       }
       goals.sort((a, b) => a.position.compareTo(b.position));
     } catch (e) {
