@@ -882,15 +882,15 @@ class AboutMeTab extends StatelessWidget {
       Text('ارکان محمودی', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.text)),
       SizedBox(height: 14),
       Text(
-        'شغل اصلی من مشاور مدرسه است. علاقه‌مندم به دانش‌آموزان و هرکسی که می‌خواهد با یک مسیر روشن به اهدافش برسد کمک کنم. رویکرد اصلی من در طراحی این ابزار، رویکرد گشتالتی است.',
+        'شغل اصلی‌ام مشاور مدرسه است، اما فراتر از این عنوان، علاقه‌ی واقعی‌ام کمک به دانش‌آموزان و هر کسی‌ست که می‌خواهد با یک مسیر روشن‌تر به اهدافش برسد. در طراحی این ابزار، رویکرد اصلی‌ام گشتالتی است؛ نگاهی که آدم را نه به‌عنوان مجموعه‌ای از مشکلات جدا از هم، بلکه به‌عنوان یک کل یکپارچه می‌بیند.',
         style: TextStyle(color: AppColors.textSoft, height: 1.8),
       ),
       SizedBox(height: 16),
       Text('شغل: مشاور مدرسه', style: TextStyle(color: AppColors.textSoft)),
       SizedBox(height: 6),
-      Text('شماره تماس: (به‌زودی تکمیل می‌شود)', style: TextStyle(color: AppColors.textSoft)),
+      Text('شماره تماس: (.....)', style: TextStyle(color: AppColors.textSoft)),
       SizedBox(height: 6),
-      Text('تلگرام: (به‌زودی تکمیل می‌شود)', style: TextStyle(color: AppColors.textSoft)),
+      Text('تلگرام: (arkan.mah2020)', style: TextStyle(color: AppColors.textSoft)),
     ]);
   }
 }
